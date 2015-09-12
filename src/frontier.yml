@@ -1,0 +1,30 @@
+# FrontierManager config
+#
+# Name this file <worldname>.yml, where "<worldname>" is the name of the world to manae.
+#
+# To manage more than one world, just copy this file and name it appropriately for each world
+# that needs to be managed.
+
+# Enable or disable management of this world
+enabled: true
+
+# lastReset: Unix timestamp of last reset, this value is set automatically by the plugin, no need to set
+#
+# You can however use this value to set this value to a timestamp in the future in order to 
+# specify exactly when the first or next reset will take place, to do this get the Unix 
+# timestamp of the current time, then add the required amount of time in seconds. The plugin
+# will then wait until the time stamp specified has passed then use the resetFrequency value
+# to schedule the next reset.
+lastReset: 0
+
+# resetFrequency: Define the time between resets, this is done using months, days and hours
+# in the format "mm dd hh", for example "01 01 03", so with this value the reset would happen
+# every 1 month, on the 1st of the month, at 0300 hours.
+resetFrequency: 01 01 03
+
+# warnChat: Display warnings in chat leading up to the reset
+warnChat: true
+
+# warnStorage: Display a warning message to players each time they place a storage container
+# e.g. a chest or furnace that this world will be reset and any items will be removed without warning.
+warnStorage: true
