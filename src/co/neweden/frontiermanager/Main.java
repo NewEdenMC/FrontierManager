@@ -9,6 +9,8 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Main extends JavaPlugin {
@@ -18,14 +20,66 @@ public class Main extends JavaPlugin {
 	
 	@Override
 	public void onEnable() {
-		// Create config directory
-		getDataFolder().mkdir();
-		File firstConfig = new File(getDataFolder(), "frontier.yml");
-		if (firstConfig.exists() == false) {
-			copyConfigFile(getResource("frontier.yml"), firstConfig);
-		}
-		
 		this.loadWorlds();
+	}
+	
+	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
+		if (!command.getName().equalsIgnoreCase("frontiermanager"))
+			return false;
+		
+		if (args.length == 0) {
+			if (sender.hasPermission("frontiermanager.help")) {
+				sender.sendMessage(String.format("§b%s version %s", getDescription().getName(), getDescription().getVersion()));
+				sender.sendMessage("§aSub-commands:");
+				if (sender.hasPermission("frontiermanager.addworld"))
+					sender.sendMessage("§a- addworld <worldname>§e: Adds this world to management and creates a config file");
+			} else
+				sender.sendMessage("§cYou do not have permission to run this command.");
+		} else {
+			switch (args[0]) {
+			case "addworld": addWorld(sender, args);
+				break;
+			case "reload": reload(sender);
+				break;
+			default: sender.sendMessage(String.format("§cUnknown sub-command %s", args[0]));
+			}
+		}
+		return true;
+	}
+	
+	private void addWorld(CommandSender sender, String args[]) {
+		if (!sender.hasPermission("frontiermanager.addworld")) {
+			sender.sendMessage("§cYou do not have permission to run this sub-command.");
+			return;
+		}
+		if (args.length != 2 || Bukkit.getWorld(args[1]) == null) {
+			sender.sendMessage("§cYou did not specify a world or the world you specified is not loaded.");
+			return;
+		}
+		getDataFolder().mkdir();
+		File config = new File(getDataFolder(), args[1] + ".yml");
+		if (config.exists()) {
+			sender.sendMessage(String.format("§cCannot create config for world %s, the config already exists.", args[1]));
+			return;
+		}
+		copyConfigFile(getResource("default_config.yml"), config);
+		World world = new World(args[1]);
+		worlds.add(world);
+		if (worlds.contains(world)) {
+			sender.sendMessage(String.format("§aConfig created and world %s now under management.", args[1]));
+		} else {
+			sender.sendMessage(String.format("§cCould not start managing world %s", args[1]));
+		}
+	}
+	
+	private void reload(CommandSender sender) {
+		if (!sender.hasPermission("frontiermanager.reload")) {
+			sender.sendMessage("§cYou do not have permission to run this sub-command.");
+			return;
+		}
+		worlds.clear();
+		loadWorlds();
+		sender.sendMessage("§aReloaded settings from configs");
 	}
 	
 	private boolean copyConfigFile(InputStream in, File file) {
@@ -51,6 +105,7 @@ public class Main extends JavaPlugin {
 	
 	private void loadWorlds() {
 		logger.info(String.format("[%s] Starting management for worlds", getDescription().getName()));
+		getDataFolder().mkdir();
 		File[] files;
 		try {
 			files = getDataFolder().listFiles();
