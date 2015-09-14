@@ -8,6 +8,9 @@
 # Enable or disable management of this world
 enabled: true
 
+# seed: The seed that will be used when regenerating the world, set to 0 to use a random seed
+seed: 0
+
 # lastReset: Unix timestamp of last reset, this value is set automatically by the plugin, no need to set
 #
 # You can however use this value to set this value to a timestamp in the future in order to 
