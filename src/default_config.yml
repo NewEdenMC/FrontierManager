@@ -11,19 +11,31 @@ enabled: true
 # seed: The seed that will be used when regenerating the world, set to 0 to use a random seed
 seed: 0
 
-# lastReset: Unix timestamp of last reset, this value is set automatically by the plugin, no need to set
+# scheduled reset section
 #
-# You can however use this value to set this value to a timestamp in the future in order to 
-# specify exactly when the first or next reset will take place, to do this get the Unix 
-# timestamp of the current time, then add the required amount of time in seconds. The plugin
-# will then wait until the time stamp specified has passed then use the resetFrequency value
-# to schedule the next reset.
-lastReset: 0
-
-# resetFrequency: Define the time between resets, this is done using months, days and hours
-# in the format "mm dd hh", for example "01 01 03", so with this value the reset would happen
-# every 1 month, on the 1st of the month, at 0300 hours.
-resetFrequency: 01 01 03
+# Some time values in this section are defined using a human readable time format of
+# "<month> <dayOfMonth> <timeOfDay>", timeOfDay being in 24 hour time.  For example:
+# - "0 15 0" means 15 days
+# - "1 15 0" means 1 month and 15 days
+# - "1 15 1200" means 1 month, 15 days and 12 hours
+# - "1 15 1230" means 1 month, 15 days, 12 hours and 30 minutes
+schedule:
+   
+   # lastReset: Unix timestamp of last reset, this value is set automatically by the plugin, no need to set
+   #
+   # You can set this value to a timestamp in the future in order to specify exactly when the first or next
+   # reset will take place, to do this get the Unix timestamp of the current time, then add the required
+   # amount of time in seconds. The plugin will then wait until the timestamp specified has passed then
+   # use the timeToNextReset value below to schedule the next reset.
+   lastReset: 0
+   
+   # timeToNextReset: Define the time that should pass from the last reset to the next resets, define
+   # this value using the human readable time formant explained at the top of this section.
+   # 
+   # For example the value "1 0 0" would cause the reset to happen exactly 1 month from the lastReset
+   # time above, or with the value "0 15 1230", the next reset would happen exactly 15 days, 12 hours
+   # and 30 minutes from the the lastReset time above.
+   timeToNextReset: 1 0 0
 
 # warnChat: Display warnings in chat leading up to the reset
 warnChat: true
