@@ -1,7 +1,6 @@
 package co.neweden.frontiermanager;
 
 import java.io.File;
-import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -10,8 +9,6 @@ import java.util.Date;
 import org.bukkit.WorldCreator;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-
-import com.sun.media.jfxmedia.logging.Logger;
 
 public class World {
 	
