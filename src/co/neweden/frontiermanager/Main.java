@@ -23,7 +23,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class Main extends JavaPlugin implements Listener {
 	
 	public final Logger logger = Logger.getLogger("Minecraft");
-	private static Set<World> worlds = new HashSet< World>();
+	protected static Set<World> worlds = new HashSet< World>();
 	
 	@Override
 	public void onEnable() {
