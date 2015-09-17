@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import org.apache.commons.io.FileUtils;
 import org.bukkit.Material;
 import org.bukkit.WorldCreator;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -124,7 +125,6 @@ public class World implements Listener {
 		try {
 			getConfig().save(plugin.getDataFolder().getPath() + File.separator + worldName + ".yml");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			plugin.logger.warning(String.format("[%s] Unable to save data to config file %s, see the error below", plugin.getDescription().getName(), worldName + ".yml"));
 			e.printStackTrace();
 		}
@@ -148,7 +148,13 @@ public class World implements Listener {
 		
 		File wFolder = plugin.getServer().getWorld(worldName).getWorldFolder();
 		plugin.getServer().unloadWorld(worldName, true);
-		wFolder.delete();
+		try {
+			FileUtils.deleteDirectory(wFolder);
+		} catch (IOException e) {
+			plugin.logger.info(String.format("[%s] Could not delete world foldr for %s, this is likely due to file permissions not being set correctly on the world folder, see stack trace below. ", plugin.getDescription().getName(), worldName));
+			e.printStackTrace();
+			return false;
+		}
 		
 		WorldCreator newWorld = new WorldCreator(worldName);
 		Long seed = getConfig().getLong("seed", 0);
