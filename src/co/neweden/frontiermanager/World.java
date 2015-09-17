@@ -6,13 +6,18 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import org.bukkit.Material;
 import org.bukkit.WorldCreator;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-public class World {
+public class World implements Listener {
 	
 	private Main plugin;
 	private Calendar lastReset;
@@ -21,6 +26,7 @@ public class World {
 	
 	public World(Main plugin, String name) {
 		this.plugin = plugin;
+		plugin.getServer().getPluginManager().registerEvents(this, plugin);
 		this.worldName = name;
 		this.config = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), worldName + ".yml"));
 		updateTimes();
@@ -39,6 +45,25 @@ public class World {
 				}
 			}
 		}.runTaskTimer(plugin, 0L, 1200L);
+	}
+	
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onBlockPlace(BlockPlaceEvent event) {
+		if (getConfig().getBoolean("warnStorage", true) == false) return;
+		if (event.getBlock().getType() == Material.CHEST ||
+			event.getBlock().getType() == Material.TRAPPED_CHEST ||
+			event.getBlock().getType() == Material.FURNACE ||
+			event.getBlock().getType() == Material.DISPENSER ||
+			event.getBlock().getType() == Material.HOPPER ||
+			event.getBlock().getType() == Material.DROPPER ||
+			event.getBlock().getType() == Material.ENDER_CHEST)
+		{
+			event.getPlayer().sendMessage(
+					"§dWARNING!\n" +
+					"§dIt is not recommended to store items in this frontier world.\n" +
+					"§dThis world will be automatically reset on " + nextReset.getTime()
+			);
+		}
 	}
 	
 	private void updateTimes() {
