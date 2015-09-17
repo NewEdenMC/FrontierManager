@@ -1,35 +1,58 @@
 package co.neweden.frontiermanager;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 import org.bukkit.WorldCreator;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 public class World {
 	
 	private Main plugin;
-	private Date lastReset;
-	private Date nextReset;
+	private Calendar lastReset;
+	private Calendar nextReset;
+	protected BukkitTask scheduler;
 	
 	public World(Main plugin, String name) {
 		this.plugin = plugin;
 		this.worldName = name;
 		this.config = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), worldName + ".yml"));
-		this.lastReset = getDate(getConfig().getString("schedule.lastReset"));
-		this.nextReset = getFutureDate(lastReset, getConfig().getString("schedule.timeToNextReset"));
+		updateTimes();
+		if (lastReset == null || nextReset == null) return;
+		
+		scheduler = new BukkitRunnable() {
+			@Override
+			public void run() {
+				Calendar now = Calendar.getInstance();
+				now.clear(Calendar.SECOND);
+				now.clear(Calendar.MILLISECOND);
+				nextReset.clear(Calendar.SECOND);
+				nextReset.clear(Calendar.MILLISECOND);
+				if (now.compareTo(nextReset) == 0) {
+					autoReset();
+				}
+			}
+		}.runTaskTimer(plugin, 0L, 1200L);
 	}
 	
-	private Date getDate(String configTime) {
+	private void updateTimes() {
+		lastReset = getTime(getConfig().getString("schedule.lastReset"));
+		nextReset = getFutureTime(lastReset, getConfig().getString("schedule.timeToNextReset"));
+	}
+	
+	private Calendar getTime(String configTime) {
 		if (configTime == null) return null;
 		try {
-			SimpleDateFormat sdf = new SimpleDateFormat("y M d hm");
-			Date date = sdf.parse(configTime);
-			return date;
+			SimpleDateFormat sdf = new SimpleDateFormat("y M d h:m");
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(sdf.parse(configTime));
+			return cal;
 		} catch (ParseException e) {
 			plugin.logger.warning(String.format("[%s] World %s: date format '%s' is in an unparsable format, please check your config, management for this world will be disabled.", plugin.getDescription().getName(), getWorldName(), configTime));
 			Main.worlds.remove(this);
@@ -37,28 +60,26 @@ public class World {
 		return null;
 	}
 	
-	private Date getFutureDate(Date absoluteDate, String referenceDate) {
-		if (referenceDate == null) return null;
+	private Calendar getFutureTime(Calendar startAt, String timeToAdd) {
+		if (timeToAdd == null) return null;
 		try {
-			String[] refDate = referenceDate.split(" "); 
-			if (refDate.length != 4)
-				throw new ParseException(referenceDate, 0);
-			if (refDate[3].length() != 4)
-				throw new ParseException(refDate[3], 0);
+			String[] add = timeToAdd.split(" "); 
+			if (add.length != 4)
+				throw new ParseException(timeToAdd, 0);
+			if (add[3].length() != 5)
+				throw new ParseException(add[3], 0);
 			
-			String refHours = refDate[3].substring(0, 2);
-			String refMinutes = refDate[3].substring(2, 4);
+			String addHours = add[3].substring(0, 2);
+			String addMinutes = add[3].substring(3, 5);
 			
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(absoluteDate);
-			cal.add(Calendar.YEAR, Integer.parseInt(refDate[0]));
-			cal.add(Calendar.MONTH, Integer.parseInt(refDate[1]));
-			cal.add(Calendar.DAY_OF_MONTH, Integer.parseInt(refDate[2]));
-			cal.add(Calendar.HOUR_OF_DAY, Integer.parseInt(refHours));
-			cal.add(Calendar.MINUTE, Integer.parseInt(refMinutes));
-			return cal.getTime();
+			startAt.add(Calendar.YEAR, Integer.parseInt(add[0]));
+			startAt.add(Calendar.MONTH, Integer.parseInt(add[1]));
+			startAt.add(Calendar.DAY_OF_MONTH, Integer.parseInt(add[2]));
+			startAt.add(Calendar.HOUR_OF_DAY, Integer.parseInt(addHours));
+			startAt.add(Calendar.MINUTE, Integer.parseInt(addMinutes));
+			return startAt;
 		} catch (NumberFormatException|ParseException e) {
-			plugin.logger.warning(String.format("[%s] World %s: date format '%s' is in an unparsable format, please check your config, management for this world will be disabled.", plugin.getDescription().getName(), getWorldName(), referenceDate));
+			plugin.logger.warning(String.format("[%s] World %s: date format '%s' is in an unparsable format, please check your config, management for this world will be disabled.", plugin.getDescription().getName(), getWorldName(), timeToAdd));
 			Main.worlds.remove(this);
 		}
 		return null;
@@ -69,6 +90,24 @@ public class World {
 	
 	private FileConfiguration config;
 	public FileConfiguration getConfig() { return this.config; }
+	
+	public void saveConfig() {
+		try {
+			getConfig().save(plugin.getDataFolder().getPath() + File.separator + worldName + ".yml");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			plugin.logger.warning(String.format("[%s] Unable to save data to config file %s, see the error below", plugin.getDescription().getName(), worldName + ".yml"));
+			e.printStackTrace();
+		}
+	}
+	
+	private void autoReset() {
+		getConfig().set("schedule.lastReset", nextReset.get(Calendar.YEAR) + " " + (nextReset.get(Calendar.MONTH) + 1) + " " + nextReset.get(Calendar.DAY_OF_MONTH) + " " + nextReset.get(Calendar.HOUR) + ":" + nextReset.get(Calendar.MINUTE));
+		saveConfig();
+		updateTimes();
+		
+		startReset();
+	}
 	
 	public boolean startReset() {
 		plugin.logger.info(String.format("[%s] Starting reset of world %s", plugin.getDescription().getName(), worldName));

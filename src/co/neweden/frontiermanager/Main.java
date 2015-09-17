@@ -157,6 +157,7 @@ public class Main extends JavaPlugin implements Listener {
 	public void onWorldUnload(WorldUnloadEvent event) {
 		World world = getWorld(event.getWorld().getName());
 		if (world != null)
+			world.scheduler.cancel();
 			worlds.remove(world);
 	}
 	

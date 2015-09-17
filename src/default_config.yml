@@ -33,7 +33,7 @@ schedule:
    # lastReset: The date and time the last scheduled reset occurred, the plugin will set this value
    # automatically, however if this is the first time you are setting up this config you should set this
    # value to a date and time in the future of when you want the first scheduled reset to run.
-   lastReset: 2015 0 0 0
+   lastReset: 0 0 0 0
    
    # timeToNextReset: Define the time that should pass from the last reset to the next reset.
    # 
