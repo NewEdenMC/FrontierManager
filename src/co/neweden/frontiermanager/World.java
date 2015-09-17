@@ -49,7 +49,11 @@ public class World implements Listener {
 	
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onBlockPlace(BlockPlaceEvent event) {
-		if (getConfig().getBoolean("warnStorage", true) == false) return;
+		if (getConfig().getBoolean("warnStorage", true) == false ||
+			!event.getPlayer().getWorld().getName().equals(worldName))
+		{
+			return;
+		}
 		if (event.getBlock().getType() == Material.CHEST ||
 			event.getBlock().getType() == Material.TRAPPED_CHEST ||
 			event.getBlock().getType() == Material.FURNACE ||
