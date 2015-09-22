@@ -37,8 +37,8 @@ schedule:
    
    # timeToNextReset: Define the time that should pass from the last reset to the next reset.
    # 
-   # For example the value "0 1 0 0" would cause the reset to happen exactly 1 month from the lastReset
-   # time above, or with the value "0 0 15 1630", the next reset would happen exactly 15 days, 16 hours
+   # For example the value "0 1 0 00:00" would cause the reset to happen exactly 1 month from the lastReset
+   # time above, or with the value "0 0 15 16:30", the next reset would happen exactly 15 days, 16 hours
    # and 30 minutes from the the lastReset time above.  When the scheduled reset happens the time set
    # here will be added to the lastReset time above to schedule the next reset.
    timeToNextReset: 0 1 0 00:00
