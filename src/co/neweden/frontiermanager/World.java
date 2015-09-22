@@ -35,6 +35,10 @@ public class World implements Listener {
 		
 		if (getConfig().getBoolean("warnChat") == true) {
 			Long nextResetTime = nextReset.getTimeInMillis() / 1000;
+			ResetMessageScheduler.scheduleMessage(new ResetMessageObject(this, nextResetTime - 1800, "30 minute"));
+			ResetMessageScheduler.scheduleMessage(new ResetMessageObject(this, nextResetTime - 600, "10 minute"));
+			ResetMessageScheduler.scheduleMessage(new ResetMessageObject(this, nextResetTime - 300, "5 minute"));
+			ResetMessageScheduler.scheduleMessage(new ResetMessageObject(this, nextResetTime - 60, "1 minute"));
 			ResetMessageScheduler.scheduleMessage(new ResetMessageObject(this, nextResetTime - 30, "30 seconds"));
 		}
 		
