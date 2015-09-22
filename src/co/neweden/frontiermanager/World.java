@@ -23,7 +23,7 @@ public class World implements Listener {
 	private Main plugin;
 	private Calendar lastReset;
 	private Calendar nextReset;
-	protected BukkitTask scheduler;
+	protected BukkitTask resetScheduler;
 	
 	public World(Main plugin, String name) {
 		this.plugin = plugin;
@@ -33,7 +33,12 @@ public class World implements Listener {
 		updateTimes();
 		if (lastReset == null || nextReset == null) return;
 		
-		scheduler = new BukkitRunnable() {
+		if (getConfig().getBoolean("warnChat") == true) {
+			Long nextResetTime = nextReset.getTimeInMillis() / 1000;
+			ResetMessageScheduler.scheduleMessage(new ResetMessageObject(this, nextResetTime - 30, "30 seconds"));
+		}
+		
+		resetScheduler = new BukkitRunnable() {
 			@Override
 			public void run() {
 				Calendar now = Calendar.getInstance();
@@ -131,10 +136,9 @@ public class World implements Listener {
 	}
 	
 	private void autoReset() {
-		getConfig().set("schedule.lastReset", nextReset.get(Calendar.YEAR) + " " + (nextReset.get(Calendar.MONTH) + 1) + " " + nextReset.get(Calendar.DAY_OF_MONTH) + " " + nextReset.get(Calendar.HOUR) + ":" + nextReset.get(Calendar.MINUTE));
+		getConfig().set("schedule.lastReset", nextReset.get(Calendar.YEAR) + " " + (nextReset.get(Calendar.MONTH) + 1) + " " + nextReset.get(Calendar.DAY_OF_MONTH) + " " + nextReset.get(Calendar.HOUR_OF_DAY) + ":" + nextReset.get(Calendar.MINUTE));
 		saveConfig();
 		updateTimes();
-		
 		startReset();
 	}
 	

@@ -28,6 +28,7 @@ public class Main extends JavaPlugin implements Listener {
 	@Override
 	public void onEnable() {
 		getServer().getPluginManager().registerEvents(this, this);
+		ResetMessageScheduler.init(this);
 		loadWorlds();
 	}
 	
@@ -155,10 +156,13 @@ public class Main extends JavaPlugin implements Listener {
 	
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onWorldUnload(WorldUnloadEvent event) {
+		if (event.isCancelled() == true) return;
 		World world = getWorld(event.getWorld().getName());
-		if (world != null)
-			world.scheduler.cancel();
+		if (world != null) {
+			world.resetScheduler.cancel();
+			ResetMessageScheduler.removeMessagesForWorld(world);
 			worlds.remove(world);
+		}
 	}
 	
 	private void loadWorlds() {
