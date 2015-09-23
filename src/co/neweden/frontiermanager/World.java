@@ -60,7 +60,8 @@ public class World implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onBlockPlace(BlockPlaceEvent event) {
 		if (getConfig().getBoolean("warnStorage", true) == false ||
-			!event.getPlayer().getWorld().getName().equals(worldName))
+			!event.getPlayer().getWorld().getName().equals(worldName) ||
+			event.isCancelled() == true)
 		{
 			return;
 		}
