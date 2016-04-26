@@ -17,6 +17,17 @@ spawnLocation:
    y: 64
    z: 0
 
+# spawnSchematic: If WorldEdit is running, the plugin will automatically try to paste in the
+# schematic named here at the spawnLocation
+# Note: these setting is commented by default
+#spawnSchematic:
+   # fileName: the file to be pasted, stored in the WorldEdit schematics folder
+#   fileName: spawn.schematic
+
+   # noAir: it's good to leave this true as it will cause WorldEdit to not paste air blocks when pasting
+   # the schematic, resulting in an increase in performance
+#   noAir: true
+
 # scheduled reset section
 #
 # Some time values in this section are defined using a human readable time format of

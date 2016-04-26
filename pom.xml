@@ -26,6 +26,11 @@
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
+        <!--sk89q-->
+        <repository>
+            <id>sk89q</id>
+            <url>https://maven.sk89q.com/repo/</url>
+        </repository>
     </repositories>
     <dependencies>
         <!--Spigot API-->
@@ -40,6 +45,13 @@
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
             <version>1.9-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <!--WorldEdit-->
+        <dependency>
+            <groupId>com.sk89q.worldedit</groupId>
+            <artifactId>worldedit-bukkit</artifactId>
+            <version>6.1.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <!--Apache-->

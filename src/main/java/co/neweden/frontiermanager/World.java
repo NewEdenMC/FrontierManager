@@ -200,6 +200,15 @@ public class World implements Listener {
 
 		nWorld.setSpawnLocation((int) spawnLocation.getX(), (int) spawnLocation.getY(), (int) spawnLocation.getZ());
 
+		if (Bukkit.getPluginManager().getPlugin("WorldEdit") != null) {
+			final WorldEdit worldEdit = new WorldEdit(plugin, this);
+			new BukkitRunnable() {
+				@Override public void run() {
+					worldEdit.pasteSchematic();
+				}
+			}.runTaskLater(plugin, 200L); // 10 second delay to allow for chunks to be loaded
+		}
+
 		plugin.logger.info(String.format("[%s] World %s has successfully been reset", plugin.getDescription().getName(), worldName));
 
 		return true;
