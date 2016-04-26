@@ -11,6 +11,12 @@ enabled: true
 # seed: The seed that will be used when regenerating the world, set to 0 to use a random seed
 seed: 0
 
+# spawnLocation: x y z coordinates of where the world spawn should be set to
+spawnLocation:
+   x: 0
+   y: 64
+   z: 0
+
 # scheduled reset section
 #
 # Some time values in this section are defined using a human readable time format of

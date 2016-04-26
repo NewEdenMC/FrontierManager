@@ -5,8 +5,11 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.logging.Level;
 
 import org.apache.commons.io.FileUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.WorldCreator;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -24,6 +27,7 @@ public class World implements Listener {
 	private Calendar lastReset;
 	private Calendar nextReset;
 	protected BukkitTask resetScheduler;
+	protected Location spawnLocation = null;
 	
 	public World(Main plugin, String name) {
 		this.plugin = plugin;
@@ -32,7 +36,16 @@ public class World implements Listener {
 		this.config = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), worldName + ".yml"));
 		updateTimes();
 		if (lastReset == null || nextReset == null) return;
-		
+
+		try {
+			Double x = getConfig().getDouble("spawnLocation.x", 0);
+			Double y = getConfig().getDouble("spawnLocation.y", 64);
+			Double z = getConfig().getDouble("spawnLocation.z", 0);
+			spawnLocation = new Location(Bukkit.getWorld(worldName), x, y, z);
+		} catch (NullPointerException e) {
+			plugin.getLogger().log(Level.WARNING, "Not able to get spawnLocation for " + worldName + " this may be because currently the world does not exist, the location was not set properly in the world config,  location of x: 0 y:64 z: 0 will be used instead. " + e.getMessage());
+		}
+
 		if (getConfig().getBoolean("warnChat") == true) {
 			Long nextResetTime = nextReset.getTimeInMillis() / 1000;
 			ResetMessageScheduler.scheduleMessage(new ResetMessageObject(this, nextResetTime - 1800, "30 minute"));
@@ -59,9 +72,9 @@ public class World implements Listener {
 	
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onBlockPlace(BlockPlaceEvent event) {
-		if (getConfig().getBoolean("warnStorage", true) == false ||
+		if (!getConfig().getBoolean("warnStorage", true) ||
 			!event.getPlayer().getWorld().getName().equals(worldName) ||
-			event.isCancelled() == true)
+			event.isCancelled())
 		{
 			return;
 		}
@@ -74,9 +87,9 @@ public class World implements Listener {
 			event.getBlock().getType() == Material.ENDER_CHEST)
 		{
 			event.getPlayer().sendMessage(
-					"§dWARNING!\n" +
-					"§dIt is not recommended to store items in this frontier world.\n" +
-					"§dThis world will be automatically reset on " + nextReset.getTime()
+					"ï¿½dWARNING!\n" +
+					"ï¿½dIt is not recommended to store items in this frontier world.\n" +
+					"ï¿½dThis world will be automatically reset on " + nextReset.getTime()
 			);
 		}
 	}
@@ -173,14 +186,23 @@ public class World implements Listener {
 		newWorld.generator(gen);
 		newWorld.seed(seed);
 		newWorld.type(type);
-		
-		if (newWorld.createWorld() != null) {
-			plugin.logger.info(String.format("[%s] World %s has successfully been reset", plugin.getDescription().getName(), worldName));
-			return true;
-		} else {
+
+		org.bukkit.World nWorld = newWorld.createWorld();
+		if (newWorld == null) {
 			plugin.logger.info(String.format("[%s] Reset of world %s has failed", plugin.getDescription().getName(), worldName));
 			return false;
 		}
+
+		if (spawnLocation != null)
+			spawnLocation.setWorld(nWorld);
+		else
+			spawnLocation = new Location(nWorld, 0, 64, 0);
+
+		nWorld.setSpawnLocation((int) spawnLocation.getX(), (int) spawnLocation.getY(), (int) spawnLocation.getZ());
+
+		plugin.logger.info(String.format("[%s] World %s has successfully been reset", plugin.getDescription().getName(), worldName));
+
+		return true;
 	}
-	
+
 }
