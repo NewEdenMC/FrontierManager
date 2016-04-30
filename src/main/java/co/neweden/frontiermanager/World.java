@@ -18,6 +18,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -69,7 +70,15 @@ public class World implements Listener {
 			}
 		}.runTaskTimer(plugin, 0L, 1200L);
 	}
-	
+
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onChangedWorld(PlayerChangedWorldEvent event) {
+		if (!getConfig().getBoolean("warnEnter", true) ||
+			!event.getPlayer().getWorld().getName().equals(worldName)) return;
+
+		event.getPlayer().sendMessage(Util.formatString("&bWelcome to " + getDisplayName() + ", this world will automatically be reset on " + nextReset.getTime()));
+	}
+
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onBlockPlace(BlockPlaceEvent event) {
 		if (!getConfig().getBoolean("warnStorage", true) ||

@@ -67,6 +67,9 @@ schedule:
 # warnChat: Display warnings in chat leading up to the reset
 warnChat: true
 
+# warnEnter: Display a warning message to the player when they enter the world
+warnEneter: true
+
 # warnStorage: Display a warning message to players each time they place a storage container
 # e.g. a chest or furnace that this world will be reset and any items will be removed without warning.
 warnStorage: true
