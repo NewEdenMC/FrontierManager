@@ -36,7 +36,7 @@ public class ResetMessageScheduler {
 					for (String m : messages)
 						message += m + "\n";
 				}
-				plugin.getServer().broadcastMessage(String.format("�dAttention!\n%s", message));
+				plugin.getServer().broadcastMessage(String.format(Util.formatString("&dAttention!\n%s"), message));
 			}
 		}.runTaskTimer(plugin, 0L, 20L);
 	}

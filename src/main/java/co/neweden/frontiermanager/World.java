@@ -86,11 +86,11 @@ public class World implements Listener {
 			event.getBlock().getType() == Material.DROPPER ||
 			event.getBlock().getType() == Material.ENDER_CHEST)
 		{
-			event.getPlayer().sendMessage(
-					"�dWARNING!\n" +
-					"�dIt is not recommended to store items in this frontier world.\n" +
-					"�dThis world will be automatically reset on " + nextReset.getTime()
-			);
+			event.getPlayer().sendMessage(Util.formatString(
+					"&dWARNING!\n" +
+					"&dIt is not recommended to store items in this frontier world.\n" +
+					"&dThis world will be automatically reset on " + nextReset.getTime()
+			));
 		}
 	}
 	
