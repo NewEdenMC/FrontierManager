@@ -8,6 +8,10 @@
 # Enable or disable management of this world
 enabled: true
 
+# displayName: a human readable name show in chat
+# Note: this settinsg is commented by default
+#displayName:
+
 # seed: The seed that will be used when regenerating the world, set to 0 to use a random seed
 seed: 0
 
@@ -19,7 +23,7 @@ spawnLocation:
 
 # spawnSchematic: If WorldEdit is running, the plugin will automatically try to paste in the
 # schematic named here at the spawnLocation
-# Note: these setting is commented by default
+# Note: these setting are commented by default
 #spawnSchematic:
    # fileName: the file to be pasted, stored in the WorldEdit schematics folder
 #   fileName: spawn.schematic

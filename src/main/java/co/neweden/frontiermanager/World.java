@@ -143,6 +143,8 @@ public class World implements Listener {
 	
 	private FileConfiguration config;
 	public FileConfiguration getConfig() { return this.config; }
+
+	public String getDisplayName() { return getConfig().getString("displayName", getWorldName()); }
 	
 	public void saveConfig() {
 		try {

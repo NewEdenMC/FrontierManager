@@ -22,7 +22,7 @@ public class ResetMessageScheduler {
 				for (Iterator<ResetMessageObject> i = resetMessages.iterator(); i.hasNext();) {
 					ResetMessageObject rmo = i.next();
 					if (rmo.timeStamp == timeStamp) {
-						messages.add(String.format("%s will reset in %s", rmo.world.getWorldName(), rmo.humanReadable));
+						messages.add(String.format("%s will reset in %s", rmo.world.getDisplayName(), rmo.humanReadable));
 						i.remove();
 					}
 				}
@@ -36,7 +36,7 @@ public class ResetMessageScheduler {
 					for (String m : messages)
 						message += m + "\n";
 				}
-				plugin.getServer().broadcastMessage(String.format("§dAttention!\n%s", message));
+				plugin.getServer().broadcastMessage(String.format("ï¿½dAttention!\n%s", message));
 			}
 		}.runTaskTimer(plugin, 0L, 20L);
 	}
